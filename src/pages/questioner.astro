@@ -1,0 +1,18 @@
+---
+import '../styles/global.css';
+import Main from "@/components/questioner/main"
+---
+
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width" />
+        <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+        <meta name="generator" content={Astro.generator} />
+        <title>Explore - Unifind</title>
+    </head>
+
+    <body class=" bg-gray-50">    
+        <Main client:only></Main>
+    </body>
+</html>

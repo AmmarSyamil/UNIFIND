@@ -1,0 +1,4 @@
+/* Override the geocoder icon to use a magnification glass */
+.leaflet-control-geocoder-icon {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='10' cy='10' r='7' stroke='%23000' stroke-width='2' fill='none'/%3E%3Cline x1='16' y1='16' x2='20' y2='20' stroke='%23000' stroke-width='2'/%3E%3C/svg%3E") !important;
+}

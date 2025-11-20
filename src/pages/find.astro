@@ -1,0 +1,21 @@
+---
+import '../styles/global.css';
+import {Sidebar} from "@/components/explore/sidebar";
+// import Main from "@/components/explore/main"
+---
+
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width" />
+        <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+        <meta name="generator" content={Astro.generator} />
+        <title>Explore - Unifind</title>
+        <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
+        <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+    </head>
+
+    <body class=" bg-gray-50">    
+        <Main client:only></Main>
+    </body>
+</html>

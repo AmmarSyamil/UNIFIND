@@ -9,6 +9,39 @@ const { content } = Astro.props;
 		<meta name="viewport" content="width=device-width" />
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<title>{content.title}</title>
+		<script>
+		// Defensive shim for `document.adoptedStyleSheets` so libraries that call
+		// Array methods (eg. .filter) won't crash when the native object doesn't
+		// implement those functions. We create a Proxy that forwards array methods
+		// to an Array copy while otherwise delegating to the original object.
+		try {
+			if (typeof document !== 'undefined' && document.adoptedStyleSheets) {
+				const original = document.adoptedStyleSheets;
+				if (typeof original.filter !== 'function') {
+					const handler = {
+						get(target, prop) {
+							// If prop is an Array method, return a bound function that runs on
+							// an Array copy of the target.
+							if (typeof Array.prototype[prop] === 'function') {
+								return Array.prototype[prop].bind(Array.from(target));
+							}
+							// otherwise forward
+							return Reflect.get(target, prop);
+						},
+						ownKeys(target) { return Reflect.ownKeys(Array.from(target)); },
+						getOwnPropertyDescriptor(target, name) { return Object.getOwnPropertyDescriptor(Array.from(target), name); }
+					};
+					const proxy = new Proxy(original, handler);
+					try {
+						Object.defineProperty(document, 'adoptedStyleSheets', { value: proxy, configurable: true });
+					} catch (e) {
+						// If we cannot redefine the property, expose the proxy under a helper
+						if (!document.__adoptedStyleSheetsProxy) document.__adoptedStyleSheetsProxy = proxy;
+					}
+				}
+			}
+		} catch (e) { /* ignore safety */ }
+		</script>
 	</head>
 	<body>
 		<slot />
