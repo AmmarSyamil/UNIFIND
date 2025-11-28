@@ -1,5 +1,5 @@
 "use client";
-
+const API = import.meta.env.PUBLIC_BACKEND_URL;
 import { useState, useEffect } from "react";
 import Question from "./question";
 import ResultCard from "./result";
@@ -10,6 +10,7 @@ import {
   FieldDescription,
 } from "@/components/ui/field";
 import { Button } from "@/components/ui/button";
+import { NavigationMenuMain } from "@/layouts/navigation";
 
 export default function Main() {
   const TOTAL_ITERS = 10;
@@ -23,6 +24,20 @@ export default function Main() {
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState(null);
   const [submitting, setSubmitting] = useState(false);
+
+  const ITER_TITLES = {
+    1: "Preferensi Gaya Berpikir dan Pendekatan Pemecahan Masalah Akademik",
+    2: "Kekuatan Akademik Inti & Ketertarikan pada Bidang Studi Spesifik",
+    3: "Pola Motivasi Belajar, Disiplin, dan Ketekunan",
+    4: "Orientasi Kreativitas, Inovasi, dan Proses Desain",
+    5: "Keterampilan Interpersonal, Kerja Tim, & Komunikasi Akademik",
+    6: "Preferensi Lingkungan Kerja Masa Depan & Tipe Aktivitas Profesional",
+    7: "Ketahanan Terhadap Tekanan Akademik & Manajemen Stres",
+    8: "Kesesuaian Gaya Hidup dengan Budaya Kampus",
+    9: "Minat Ekstrakurikuler & Keterlibatan Komunitas",
+    10:"Visi Karir Jangka Panjang, Nilai Pribadi, & Arah Hidup",
+  };
+
 
   useEffect(() => {
     // fetch questions for current iteration unless cached
@@ -38,7 +53,7 @@ export default function Main() {
       const maxAttempts = 3;
       for (let attempt = 1; attempt <= maxAttempts; attempt++) {
         try {
-          const res = await fetch(`http://localhost:3000/pre?iter=${iter}`);
+          const res = await fetch(`${API}/pre?iter=${iter}`);
           const json = await res.json();
 
           // If backend returned a structured error, throw to trigger retry
@@ -64,7 +79,7 @@ export default function Main() {
           const list = questions.slice(0, QUESTIONS_PER_ITER).map((q, i) => ({
             title: `Q${(iter - 1) * QUESTIONS_PER_ITER + i + 1}`,
             description: q,
-            nilai: 3,
+            nilai: null,
             imageUrl: `https://placekitten.com/20${i}/20${i}`,
           }));
 
@@ -95,8 +110,13 @@ export default function Main() {
     loadIterWithRetry(currentIter);
   }, [currentIter]);
 
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, [currentIter]);
+
   // Load cached progress from localStorage on mount
   useEffect(() => {
+    // window.scrollTo({ top: 0, behavior: "smooth" });
     // Detect a reload (including hard refresh) and clear saved progress in that case.
     // Also listen for Ctrl+Shift+R or Ctrl+F5 keypress to clear before the reload happens.
     function clearSaved() {
@@ -178,7 +198,6 @@ export default function Main() {
   // Move to next iteration (save current), or submit if last
   async function handleNext(event) {
     event?.preventDefault();
-    // ensure current data saved in cache (already updated in handleResultChange)
 
     if (currentIter < TOTAL_ITERS) {
       const next = currentIter + 1;
@@ -187,12 +206,14 @@ export default function Main() {
       return;
     }
 
-    // Last iteration: submit all accumulated answers
+    // ------------------------------
+    // 🔥 LAST ITERATION — SUBMIT ALL
+    // ------------------------------
+
     // Flatten cached data in order 1..TOTAL_ITERS
     const allData = [];
     for (let i = 1; i <= TOTAL_ITERS; i++) {
       const iterData = cached[i] ? [...cached[i]] : [];
-      // if current iter equals i, prefer current `data` state
       if (i === currentIter) {
         iterData.length = 0;
         Array.prototype.push.apply(iterData, data || []);
@@ -206,7 +227,8 @@ export default function Main() {
     try {
       setSubmitting(true);
       setErrorMsg(null);
-      const r = await fetch("http://localhost:3000/post", {
+
+      const r = await fetch("${API}/post", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ answers, questions }),
@@ -214,41 +236,62 @@ export default function Main() {
 
       const text = await r.text();
       let res;
+
       try {
         res = JSON.parse(text);
       } catch (e) {
         res = { __rawText: text, __status: r.status };
       }
 
-      // Interpret response
+      // -----------------------------
+      // 🔥 COMBINED INTERPRETATION
+      // -----------------------------
       let majors = null;
-      if (res && Array.isArray(res.top_majors)) majors = res.top_majors;
-      else if (res && res.top_majors && Array.isArray(res.top_majors.top_majors)) majors = res.top_majors.top_majors;
-      else if (Array.isArray(res)) majors = res;
-      else if (res && typeof res.text === "string") {
+
+      if (res && Array.isArray(res.top_majors)) {
+        majors = res.top_majors;
+      } else if (res && res.top_majors && Array.isArray(res.top_majors.top_majors)) {
+        majors = res.top_majors.top_majors;
+      } else if (Array.isArray(res)) {
+        majors = res;
+      } else if (res && typeof res.text === "string") {
         try {
           const parsed = JSON.parse(res.text);
           if (Array.isArray(parsed.top_majors)) majors = parsed.top_majors;
         } catch (e) {}
       }
 
+      let list;
+
       if (majors && majors.length) {
-        const list = majors.map((m, i) => ({
+        list = majors.map((m, i) => ({
           title: m.major ?? `Major ${i + 1}`,
           description: m.reason ?? (typeof m === "string" ? m : ""),
           imageUrl: `https://placekitten.com/20${i}/20${i}`,
         }));
-        setResultData(list);
-        setIsResult(true);
-        // clear saved progress
-        try { localStorage.removeItem("unifind_survey_v1"); } catch (e) {}
       } else if (res && res.__rawText) {
-        setResultData([{ title: "Server response", description: res.__rawText, imageUrl: `https://placekitten.com/200/200` }]);
-        setIsResult(true);
+        list = [
+          {
+            title: "Server response",
+            description: res.__rawText,
+            imageUrl: `https://placekitten.com/200/200`,
+          },
+        ];
       } else {
-        setResultData(allData);
-        setIsResult(true);
+        list = allData;
       }
+
+      setResultData(list);
+      setIsResult(true);
+
+      // 🔥 ALWAYS CLEAR STORAGE WHEN DONE
+      try {
+        localStorage.removeItem("unifind_survey_v1");
+      } catch (e) {}
+
+      setCached({});
+      setData(null);
+      setCurrentIter(1);
     } catch (err) {
       console.error("Failed to submit answers:", err);
       setErrorMsg(String(err?.message ?? err));
@@ -295,6 +338,8 @@ export default function Main() {
   })();
 
   return (
+    <div>
+    <NavigationMenuMain />
     <main className="min-h-screen bg-background flex items-center justify-center px-4">
       <div className="w-full max-w-3xl border border-muted rounded-2xl p-8 shadow-lg bg-card">
         {!isResult ? (
@@ -303,7 +348,7 @@ export default function Main() {
             <FieldSet className="space-y-8">
               <div className="text-center">
                 <FieldLegend className="text-2xl font-semibold mb-2">
-                  Survey Form
+                  {ITER_TITLES[currentIter]}
                 </FieldLegend>
                 <FieldDescription className="text-muted-foreground">
                   Silakan isi penilaian anda di bawah ini.
@@ -394,5 +439,6 @@ export default function Main() {
         )}
       </div>
     </main>
+    </div>
   );
 }

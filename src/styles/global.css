@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap');
 @import "tailwindcss";
 @import "tw-animate-css";
 
@@ -116,6 +117,11 @@
   }
   body {
     @apply bg-background text-foreground;
+    font-family: 'Roboto', ui-sans-serif, system-ui, -apple-system, "Segoe UI", "Helvetica Neue", Arial;
   }
 }
 
+
+body {
+  background-color: #f4f4f4; /* Cream color */
+}

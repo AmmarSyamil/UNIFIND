@@ -1,9 +1,12 @@
 ---
-import Results from "../components/explore/result_sidebar"
 import '../styles/global.css';
-import { NavigationMenuMain } from "@/layouts/navigation";
+// Component Imports
+import Button from '../components/Button.astro';
+// import { LoginForm } from '@/components/login-form';
+import LoginPage from '../components/login/page';
+// Full Astro Component Syntax:
+// https://docs.astro.build/basics/astro-components/
 ---
-
 
 <!DOCTYPE html>
 <html lang="en">
@@ -13,11 +16,9 @@ import { NavigationMenuMain } from "@/layouts/navigation";
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<meta name="generator" content={Astro.generator} />
 		<title>Astro + TailwindCSS</title>
-		<script src="/session-guard.js" defer></script>
 	</head>
 
 	<body>
-		<NavigationMenuMain></NavigationMenuMain>
-        <!-- <Results client:load/> -->
+		<LoginPage client:load />
 	</body>
 </html>

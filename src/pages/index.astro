@@ -1,23 +1,20 @@
 ---
 import '../styles/global.css';
-// Component Imports
-import Button from '../components/Button.astro';
-// import { LoginForm } from '@/components/login-form';
-import LoginPage from '../components/page';
-// Full Astro Component Syntax:
-// https://docs.astro.build/basics/astro-components/
+import { NavigationMenuMain } from '@/layouts/navigation.jsx';
+import Main from '@/components/home/home.jsx';
 ---
 
+<!DOCTYPE html>
 <html lang="en">
 	<head>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width" />
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro + TailwindCSS</title>
+		<title>Unifind</title>
 	</head>
 
 	<body>
-		<LoginPage client:load />
+		<NavigationMenuMain client:load />
+		<Main client:only="react" />
 	</body>
 </html>

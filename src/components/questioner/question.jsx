@@ -66,7 +66,7 @@ const Question = ({ title, description, nilai, onResultChange }) => {
               <div key={num} className="flex flex-col items-center">
                 <Button
                   variant="outline"
-                  onClick={() => onResultChange(num)}
+                  onClick={() => onResultChange(isSelected ? null : num)}
                   className={`
                     w-10 h-10 p-0 rounded-full border 
                     transition-all duration-150 active:scale-90
@@ -83,6 +83,7 @@ const Question = ({ title, description, nilai, onResultChange }) => {
                 <span className="text-[11px] mt-1 text-muted-foreground text-center w-14 leading-tight">
                   {labels[num]}
                 </span>
+                
               </div>
             );
           })}
@@ -95,7 +96,13 @@ const Question = ({ title, description, nilai, onResultChange }) => {
             transition-all duration-200`}
         >
           <span>Pilihan Kamu:</span>
-          <span>{nilai} ({labels[nilai]})</span>
+          {nilai ? (
+            <span>
+              {nilai} ({labels[nilai]})
+            </span>
+          ) : (
+            <span className="text-gray-400 italic">Belum memilih</span>
+          )}
         </div>
       </CardFooter>
     </Card>

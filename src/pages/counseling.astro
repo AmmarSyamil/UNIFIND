@@ -1,7 +1,11 @@
 ---
 import '../styles/global.css';
-import Main from "@/components/questioner/main"
+import Main from "@/components/counseling/main.jsx";
+// import Main from "@/components/explore/main"
 ---
+
+
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -11,6 +15,7 @@ import Main from "@/components/questioner/main"
         <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
         <meta name="generator" content={Astro.generator} />
         <title>Explore - Unifind</title>
+        <!-- Use the npm-built geocoder module via imports in components instead of loading from unpkg -->
         <script src="/session-guard.js" defer></script>
     </head>
 

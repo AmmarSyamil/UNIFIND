@@ -1,9 +1,10 @@
 ---
 import '../styles/global.css';
-import {Sidebar} from "@/components/explore/sidebar";
+import Main from "@/components/find/main.jsx";
 // import Main from "@/components/explore/main"
 ---
 
+<!DOCTYPE html>
 <html lang="en">
     <head>
         <meta charset="utf-8" />
@@ -11,8 +12,8 @@ import {Sidebar} from "@/components/explore/sidebar";
         <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
         <meta name="generator" content={Astro.generator} />
         <title>Explore - Unifind</title>
-        <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
-        <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+        <!-- Use the npm-built geocoder module via imports in components instead of loading from unpkg -->
+        <script src="/session-guard.js" defer></script>
     </head>
 
     <body class=" bg-gray-50">    

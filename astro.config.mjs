@@ -9,8 +9,14 @@ import react from '@astrojs/react';
 
 export default defineConfig({
   vite: {
-      plugins: [tailwindcss()],
-	},
+    // @ts-ignore
+    plugins: tailwindcss(),
+    resolve: {
+      alias: {
+        "@assets": "./src/assets",
+      },
+    },
+  },
 
   // this thing below is for adapting to express
   // output: 'server',
